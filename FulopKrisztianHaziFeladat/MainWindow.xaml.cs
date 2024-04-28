@@ -44,7 +44,11 @@ namespace FulopKrisztianHaziFeladat
         private string UserPassword = string.Empty;
         private string UserEmail = string.Empty;
         private int ID = 0;
-        
+        private string BookTitle = string.Empty;
+        private string BookAuthor = string.Empty;
+        private string BookDate = string.Empty;
+        private string BookPrice = string.Empty;
+        private int BookID = 0;
 
         public MainWindow()
         {
@@ -58,6 +62,7 @@ namespace FulopKrisztianHaziFeladat
             MainPage.Visibility = Visibility.Visible;
             RegistrationPage.Visibility = Visibility.Hidden;
             PopUpWindow.Visibility = Visibility.Hidden;
+            StatisticPage.Visibility = Visibility.Hidden;
             func.RegErrorOff(ControlRepository.TextBlocks, ControlRepository.TextBoxes, ControlRepository.PasswordBoxes);
             if (File.Exists("ID.txt"))
             {
@@ -66,6 +71,15 @@ namespace FulopKrisztianHaziFeladat
             else
             {
                 File.WriteAllText("ID.txt", ID.ToString());
+            }
+
+            if (File.Exists("BookID.txt"))
+            {
+                BookID = Convert.ToInt32(File.ReadAllText("BookID.txt"));
+            }
+            else
+            {
+                File.WriteAllText("BookID.txt", BookID.ToString());
             }
         }
         private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -127,7 +141,6 @@ namespace FulopKrisztianHaziFeladat
             MainPage.Visibility = Visibility.Hidden;
             RegistrationPage.Visibility = Visibility.Visible;
             func.RegErrorOff(ControlRepository.TextBlocks, ControlRepository.TextBoxes, ControlRepository.PasswordBoxes);
-
         }
 
         //Upload User Data
@@ -225,16 +238,65 @@ namespace FulopKrisztianHaziFeladat
             RegistrationPage.Visibility = Visibility.Hidden;
             func.RegErrorOff(ControlRepository.TextBlocks, ControlRepository.TextBoxes, ControlRepository.PasswordBoxes);
         }
-
+        private void OkayFunction(object sender, RoutedEventArgs e)
+        {
+            PopUpWindow.Visibility = Visibility.Hidden;
+        }
         //Statistic
         private void StatisticFunction(object sender, RoutedEventArgs e)
         {
+            MainPage.Visibility = Visibility.Hidden;
+            RegistrationPage.Visibility = Visibility.Hidden;
+            StatisticPage.Visibility = Visibility.Visible;
+            DatabaseHelper.LoadBooksFromDatabase(DataOutput);
+        }
+        //Feltötés
+        private void UploadFunction(object sender, RoutedEventArgs e)
+        {
+            bool correct = true;
+            string[] books = { TitleInput.Text.Trim(), AuthorInput.Text.Trim(), DateInput.Text.Trim(), PriceInput.Text.Trim() };
+            BookID = Convert.ToInt32(File.ReadAllText("BookID.txt"));
+            foreach (string book in books)
+            {
+                if (!DatabaseHelper.SecureBook(book))
+                {
+                    correct = false;
+                    PopUpWindow.Visibility = Visibility.Visible;
+                    PopUpWindowText.Text = "Hibás az egyik beviteli mező";
+                    break;
+                }
+            }
 
+            if (correct)
+            {
+                try
+                {
+                    BookID++;
+                    File.WriteAllText("BookID.txt", BookID.ToString());
+                    string bookTitle = TitleInput.Text.Trim();
+                    string bookAuthor = AuthorInput.Text.Trim();
+                    int bookDate = int.Parse(DateInput.Text);
+                    decimal bookPrice = decimal.Parse(PriceInput.Text.Trim());
+                    DatabaseHelper.AddBookToDatabase(BookID, bookTitle, bookAuthor, bookDate, bookPrice);
+                    DatabaseHelper.LoadBooksFromDatabase(DataOutput);
+                    TitleInput.Text = string.Empty;
+                    AuthorInput.Text = string.Empty;
+                    DateInput.Text = string.Empty;
+                    PriceInput.Text = string.Empty;
+
+                }
+                catch (Exception ex)
+                {
+                    PopUpWindow.Visibility = Visibility.Visible;
+                    PopUpWindowText.Text = "Hiba történt a könyv feltöltése során: " + ex.Message;
+                }
+            }
         }
 
-        private void OkayFunction(object sender, RoutedEventArgs e)
+        private void BackFunction2(object sender, RoutedEventArgs e)
         {
-            PopUpWindow.Visibility= Visibility.Hidden;
+            StatisticPage.Visibility = Visibility.Hidden;
+            MainPage.Visibility = Visibility.Visible;
         }
     }
 }

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Data;
 using MySql.Data.MySqlClient;
 using System.Windows;
+using System.Windows.Controls;
 
 namespace FulopKrisztianHaziFeladat
 {
@@ -153,6 +154,7 @@ namespace FulopKrisztianHaziFeladat
                 return false;
             }
         }
+
         private static bool UserExistsWithEmail(string email)
         {
             DatabaseHelper dbHelper = new DatabaseHelper();
@@ -172,5 +174,98 @@ namespace FulopKrisztianHaziFeladat
                 return false;
             }
         }
+
+        //Könyv feltöltés
+        public static bool AddBookToDatabase(int id, string title, string author, int date, decimal price)
+        {
+            DatabaseHelper dbHelper = new DatabaseHelper();
+            try
+            {
+                bool bookExists = BookExists(title);
+
+                if (!bookExists)
+                {
+                    string query = $"INSERT INTO books (ID, Title, Author, Date, Price) VALUES ({id}, '{title}', '{author}', '{date}', {price})";
+                    MySqlCommand cmd = new MySqlCommand(query, dbHelper.GetConnection());
+                    dbHelper.OpenConnection();
+                    cmd.ExecuteNonQuery();
+                    dbHelper.CloseConnection();
+                    return true;
+                }
+                else
+                {
+                    MessageBox.Show("A könyv már létezik az adatbázisban.");
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Hiba történt az adatbázishoz történő hozzáadás során: " + ex.Message);
+                return false;
+            }
+        }
+
+
+
+        public static bool SecureBook(string book)
+        {
+            return !string.IsNullOrEmpty(book);
+        }
+
+        //Könyv lekérdezés
+        public static void LoadBooksFromDatabase(DataGrid YourDataGridName)
+        {
+            try
+            {
+                string query = "SELECT * FROM books";
+                DataTable dt = new DataTable();
+
+                using (MySqlConnection connection = new MySqlConnection($"SERVER=localhost;DATABASE=library;UID=LibraryUse;PASSWORD=Premo800;"))
+                {
+                    using (MySqlCommand command = new MySqlCommand(query, connection))
+                    {
+                        connection.Open();
+
+                        using (MySqlDataAdapter adapter = new MySqlDataAdapter(command))
+                        {
+                            adapter.Fill(dt);
+                        }
+
+                        connection.Close();
+                    }
+                }
+
+                YourDataGridName.ItemsSource = dt.DefaultView;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Hiba történt az adatok betöltése során: " + ex.Message);
+            }
+        }
+
+        public static bool BookExists(string bookTitle)
+        {
+            bool exists = false;
+            try
+            {
+                string query = $"SELECT COUNT(*) FROM books WHERE Title = '{bookTitle}'";
+                using (MySqlConnection connection = new MySqlConnection($"SERVER=localhost;DATABASE=library;UID=LibraryUse;PASSWORD=Premo800;"))
+                {
+                    using (MySqlCommand command = new MySqlCommand(query, connection))
+                    {
+                        connection.Open();
+                        int count = Convert.ToInt32(command.ExecuteScalar());
+                        exists = (count > 0);
+                        connection.Close();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Hiba történt az adatok ellenőrzése során: " + ex.Message);
+            }
+            return exists;
+        }
+
     }
 }
