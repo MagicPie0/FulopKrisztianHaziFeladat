@@ -266,6 +266,27 @@ namespace FulopKrisztianHaziFeladat
             }
             return exists;
         }
+        public static bool UpdateUserPassword(string username, string newPassword)
+        {
+            try
+            {
+                using (MySqlConnection connection = new MySqlConnection($"SERVER=localhost;DATABASE=library;UID=LibraryUse;PASSWORD=Premo800;"))
+                {
+                    connection.Open();
+                    string query = "UPDATE user SET password = @password WHERE name = @username";
+                    MySqlCommand cmd = new MySqlCommand(query, connection);
+                    cmd.Parameters.AddWithValue("@username", username);
+                    cmd.Parameters.AddWithValue("@password", newPassword);
+                    int result = cmd.ExecuteNonQuery();
+                    return result > 0;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Hiba történt az adatok ellenőrzése során: " + ex.Message);
+                return false;
+            }
+        }
 
     }
 }

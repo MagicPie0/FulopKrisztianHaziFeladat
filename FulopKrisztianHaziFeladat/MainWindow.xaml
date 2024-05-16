@@ -141,7 +141,7 @@
                                 <Setter Property="Background" TargetName="border" Value="#FF7597"/>
                             </Trigger>
                             <Trigger Property="IsPressed" Value="true">
-                                <Setter Property="Background" TargetName="border" Value="#03DAC5"/> 
+                                <Setter Property="Background" TargetName="border" Value="#03DAC5"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -208,7 +208,6 @@
             <PasswordBox Style="{DynamicResource PasswordBoxStyle}" x:Name="LoginPasswordInput" Foreground="White" HorizontalAlignment="Left" Margin="30,250,0,0" VerticalAlignment="Top" Height="24" Width="250" FontSize="16" CaretBrush="White"/>
             <TextBlock x:Name="LogPassError" HorizontalAlignment="Left" VerticalAlignment="Top" Text="Some error" Margin="30,275,0,0" FontSize="10" FontFamily="Sitka Subheading" Width="250" Foreground="#CF6679"/>
 
-            <Button Style="{DynamicResource ButtonStyle}" x:Name="StatButton" Content="Statistic" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="30,330,0,0" Height="40" Width="150" FontSize="24" FontFamily="Trebuchet MS" Click="StatisticFunction"/>
             <Button Style="{DynamicResource ButtonStyle}" x:Name="LoginButton" Content="Login" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,142,30,0" Height="40" Width="150" FontSize="24" FontFamily="Trebuchet MS" Click="LoginFunction"/>
             <Button Style="{DynamicResource ButtonStyle}" x:Name="RegistrationButton" Content="Registration" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,242,30,0" Height="40" Width="150" FontSize="24" FontFamily="Trebuchet MS" Click="RegistrationFunction"/>
 
@@ -231,11 +230,32 @@
             <Button Style="{DynamicResource ButtonStyle}" x:Name="LogButton" Content="Back" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,290,30,0" Height="40" Width="150" FontSize="24" FontFamily="Trebuchet MS" Click="BackFunction"/>
         </Grid>
 
-       
 
-        <Grid x:Name="StatisticPage" Visibility="Visible">
-            <DataGrid x:Name="DataOutput" d:ItemsSource="{d:SampleData ItemCount=5}" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="20" IsReadOnly="True" Background="#03DAC5" BorderBrush="{x:Null}"/>
+
+        <Grid x:Name="StatisticPage" Visibility="Hidden">
+
+            <DataGrid x:Name="DataOutput" AutoGenerateColumns="False"  Width="300" Height="200" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="100" IsReadOnly="True" BorderBrush="{x:Null}">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Author" Binding="{Binding Author}" SortMemberPath="Author"/>
+                    <DataGridTextColumn Header="Title" Binding="{Binding Title}" SortMemberPath="Title"/>
+                    <DataGridTextColumn Header="Price" Binding="{Binding Price}" SortMemberPath="Price"/>
+                    <DataGridTextColumn Header="Date" Binding="{Binding Date}" SortMemberPath="Date"/>
+                </DataGrid.Columns>
+            </DataGrid>
             
+            <Button Style="{DynamicResource ButtonStyle}" x:Name="BackButton" Content="Back" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,10,50" Height="40" Width="150" FontSize="24" FontFamily="Trebuchet MS" Click="BackFunction2"/>
+            <Button Style="{DynamicResource ButtonStyle}" x:Name="NewBookButton" Content="New Book" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,50" Height="40" Width="150" FontSize="24" FontFamily="Trebuchet MS" Click="NewBookFunction"/>
+
+            
+            <Button Style="{DynamicResource ButtonStyle}" x:Name="SettingsButton" Content="Settings" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="10,0,0,50" Height="40" Width="150" FontSize="24" FontFamily="Trebuchet MS" Click="SettingsFunction"/>
+            
+            <RadioButton Content="Author" HorizontalAlignment="Left" Margin="43,89,0,0" VerticalAlignment="Top" Foreground="White" IsChecked="True" Checked="RadioButton_Checked"/>
+            <RadioButton Content="Price" HorizontalAlignment="Center" Margin="0,89,0,0" VerticalAlignment="Top" Foreground="White" Checked="RadioButton_Checked"/>
+            <RadioButton Content="Date" HorizontalAlignment="Left" Margin="373,89,0,0" VerticalAlignment="Top" Foreground="White" />
+
+        </Grid>
+
+        <Grid x:Name="NewBook" Visibility="Hidden">
             <TextBlock HorizontalAlignment="Left" VerticalAlignment="Top" Text="Cím:" Foreground="White" Margin="30,100,0,0" FontSize="22" FontFamily="Sitka Subheading"/>
             <TextBox Style="{DynamicResource TextBoxStyle}" x:Name="TitleInput" Foreground="White" HorizontalAlignment="Left" Margin="30,125,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="24" Width="200" FontSize="16" CaretBrush="White" />
 
@@ -248,11 +268,20 @@
             <TextBlock HorizontalAlignment="Right" VerticalAlignment="Top" Text="Ár:" Foreground="White" Margin="0,200,190,0" FontSize="22" FontFamily="Sitka Subheading"/>
             <TextBox Style="{DynamicResource TextBoxStyle}" x:Name="PriceInput" Foreground="White" HorizontalAlignment="Right" Margin="0,225,20,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="24" Width="200" FontSize="16" CaretBrush="White" />
 
-            <Button Style="{DynamicResource ButtonStyle}" x:Name="UploadButton" Content="Feltöltés" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="60,0,0,150" Height="40" Width="150" FontSize="24" FontFamily="Trebuchet MS" Click="UploadFunction"/>
-            <Button Style="{DynamicResource ButtonStyle}" x:Name="BackButton" Content="Back" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,50,150" Height="40" Width="150" FontSize="24" FontFamily="Trebuchet MS" Click="BackFunction2"/>
+            <Button Style="{DynamicResource ButtonStyle}" x:Name="BackButton3" Content="Back" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,60,100" Height="40" Width="150" FontSize="24" FontFamily="Trebuchet MS" Click="BackFunction3"/>
+
+            <Button Style="{DynamicResource ButtonStyle}" x:Name="UploadButton" Content="Feltöltés" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="60,0,0,100" Height="40" Width="150" FontSize="24" FontFamily="Trebuchet MS" Click="UploadFunction"/>
 
         </Grid>
 
+        <Grid x:Name="SettingsGrid" Visibility="Visible">
+            <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="Új jelszó:" Foreground="White" Margin="0,0,155,50" FontSize="22" FontFamily="Sitka Subheading"/>
+            <PasswordBox Style="{DynamicResource PasswordBoxStyle}" x:Name="NewPasswordInput" Foreground="White" HorizontalAlignment="Center" Margin="0,220,0,0" VerticalAlignment="Top" Height="24" Width="250" FontSize="16" CaretBrush="White"/>
+            <Button Style="{DynamicResource ButtonStyle}" x:Name="NewPasswordButton" Content="Új jelszó" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="60,0,0,100" Height="40" Width="150" FontSize="24" FontFamily="Trebuchet MS" Click="NewPasswordFunction"/>
+            <Button Style="{DynamicResource ButtonStyle}" x:Name="BackButton4" Content="Back" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,60,100" Height="40" Width="150" FontSize="24" FontFamily="Trebuchet MS" Click="BackFunction4"/>
+
+        </Grid>
+        
         <Grid Visibility="Hidden" x:Name="PopUpWindow" Width="300" Height="200"  VerticalAlignment="Center" HorizontalAlignment="Center">
             <Rectangle x:Name="PopUpWindowBG" Fill="White" RadiusX="30" RadiusY="30" Opacity=".90"/>
             <TextBlock x:Name="PopUpWindowText" HorizontalAlignment="Center" VerticalAlignment="Center" Text="Some error" Foreground="Black" FontSize="22" FontFamily="Sitka Subheading"/>

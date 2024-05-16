@@ -16,6 +16,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Shell;
 using System.IO;
+using System.ComponentModel;
 
 namespace FulopKrisztianHaziFeladat
 {
@@ -58,11 +59,12 @@ namespace FulopKrisztianHaziFeladat
             PasswordBox[] passwordBoxes = { RegistrationPasswordInput, LoginPasswordInput };
             ControlRepository.InitializeControls(textBlocks, textBoxes, passwordBoxes);
             LoginNameInput.Focus();
-            StatButton.IsEnabled = false;
             MainPage.Visibility = Visibility.Visible;
             RegistrationPage.Visibility = Visibility.Hidden;
             PopUpWindow.Visibility = Visibility.Hidden;
             StatisticPage.Visibility = Visibility.Hidden;
+            NewBook.Visibility = Visibility.Hidden;
+            SettingsGrid.Visibility = Visibility.Hidden;
             func.RegErrorOff(ControlRepository.TextBlocks, ControlRepository.TextBoxes, ControlRepository.PasswordBoxes);
             if (File.Exists("ID.txt"))
             {
@@ -113,9 +115,11 @@ namespace FulopKrisztianHaziFeladat
                     func.RegErrorOff(ControlRepository.TextBlocks, ControlRepository.TextBoxes, ControlRepository.PasswordBoxes);
                     LoginNameInput.Text = string.Empty;
                     LoginPasswordInput.Password = string.Empty;
-                    PopUpWindow.Visibility = Visibility.Visible;
-                    PopUpWindowText.Text = "Sikeres bejelentkezés!";
-                    StatButton.IsEnabled = true;
+                   
+                    MainPage.Visibility = Visibility.Hidden;
+                    RegistrationPage.Visibility = Visibility.Hidden;
+                    StatisticPage.Visibility = Visibility.Visible;
+                    DatabaseHelper.LoadBooksFromDatabase(DataOutput);
                     break;
                 case DatabaseHelper.AuthenticationResult.InvalidUsername:
                     LogNameError.Visibility = Visibility.Visible;
@@ -242,14 +246,7 @@ namespace FulopKrisztianHaziFeladat
         {
             PopUpWindow.Visibility = Visibility.Hidden;
         }
-        //Statistic
-        private void StatisticFunction(object sender, RoutedEventArgs e)
-        {
-            MainPage.Visibility = Visibility.Hidden;
-            RegistrationPage.Visibility = Visibility.Hidden;
-            StatisticPage.Visibility = Visibility.Visible;
-            DatabaseHelper.LoadBooksFromDatabase(DataOutput);
-        }
+      
         //Feltötés
         private void UploadFunction(object sender, RoutedEventArgs e)
         {
@@ -297,6 +294,108 @@ namespace FulopKrisztianHaziFeladat
         {
             StatisticPage.Visibility = Visibility.Hidden;
             MainPage.Visibility = Visibility.Visible;
+        }
+
+        private void NewBookFunction(object sender, RoutedEventArgs e)
+        {
+            StatisticPage.Visibility = Visibility.Hidden;
+            MainPage.Visibility = Visibility.Hidden;
+            NewBook.Visibility = Visibility.Visible;
+        }
+
+        private void BackFunction3(object sender, RoutedEventArgs e)
+        {
+            NewBook.Visibility = Visibility.Hidden;
+            StatisticPage.Visibility = Visibility.Visible;
+
+        }
+
+        private void RadioButton_Checked(object sender, RoutedEventArgs e)
+        {
+            var selectedRadioButton = sender as RadioButton;
+            if (selectedRadioButton == null)
+                return;
+
+            string sortColumn = selectedRadioButton.Content.ToString();
+            DataGridColumn sortColumnObj = DataOutput.Columns.FirstOrDefault(c => c.Header.ToString() == sortColumn);
+
+            if (sortColumnObj != null)
+            {
+                ListSortDirection direction = ListSortDirection.Ascending;
+                if (DataOutput.Items.SortDescriptions.Count > 0)
+                {
+                    var currentSort = DataOutput.Items.SortDescriptions[0];
+                    if (currentSort.PropertyName == sortColumn && currentSort.Direction == ListSortDirection.Ascending)
+                    {
+                        direction = ListSortDirection.Ascending;
+                    }
+                }
+
+                DataOutput.Items.SortDescriptions.Clear();
+                DataOutput.Items.SortDescriptions.Add(new SortDescription(sortColumnObj.SortMemberPath, direction));
+
+                foreach (var col in DataOutput.Columns)
+                {
+                    col.SortDirection = null;
+                }
+                sortColumnObj.SortDirection = direction;
+            }
+        }
+
+        private void SettingsFunction(object sender, RoutedEventArgs e)
+        {
+            StatisticPage.Visibility = Visibility.Hidden;
+
+            SettingsGrid.Visibility = Visibility.Visible;
+        }
+
+        private void NewPasswordFunction(object sender, RoutedEventArgs e)
+        {
+            string newPassword = NewPasswordInput.Password;
+            int validationResult = func.CheckUserPassword(newPassword);
+
+            switch (validationResult)
+            {
+                case 0:
+                    func.GoodColorPass(NewPasswordInput);
+                    if (DatabaseHelper.UpdateUserPassword(UserName, newPassword))
+                    {
+                        PopUpWindow.Visibility = Visibility.Visible;
+                        PopUpWindowText.Text = "Jelszó sikeresen módosítva!";
+                        NewPasswordInput.Password = string.Empty;
+                    }
+                    else
+                    {
+                        PopUpWindow.Visibility = Visibility.Visible;
+                        PopUpWindowText.Text = "Hiba történt a jelszó módosítása során.";
+                    }
+                    break;
+                case 1:
+                    MessageBox.Show("A jelszó mező nem lehet üres!");
+                    func.ErrorColorPass(NewPasswordInput);
+                    break;
+                case 2:
+                    MessageBox.Show("A jelszónak legalább 8 karakter hosszúnak kell lennie!");
+                    func.ErrorColorPass(NewPasswordInput);
+                    break;
+                case 3:
+                    MessageBox.Show("A jelszónak tartalmaznia kell legalább egy nagybetűt!");
+
+                    func.ErrorColorPass(NewPasswordInput);
+                    break;
+                case 4:
+
+                    MessageBox.Show("A jelszónak tartalmaznia kell legalább egy számot!");
+
+                    func.ErrorColorPass(NewPasswordInput);
+                    break;
+            }
+        }
+
+        private void BackFunction4(object sender, RoutedEventArgs e)
+        {
+            NewBook.Visibility = Visibility.Visible;
+            SettingsGrid.Visibility = Visibility.Hidden;
         }
     }
 }
